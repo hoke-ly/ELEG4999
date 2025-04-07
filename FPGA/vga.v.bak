@@ -1,0 +1,39 @@
+module vga(
+
+    input        wire                    clk,
+    input        wire                    rst_n,
+    
+    output    wire        [23:0]   　 vga_rgb,
+    output    wire                    vga_hs,
+    output    wire                    vga_vs,
+    output    wire             　　　　 VGA_CLK,
+    output    wire                     VGA_BLANK_N,
+    output    wire                     VGA_SYNC_N
+);
+
+    wire                    clk_25m;
+    wire                    pll_locked;
+    
+    pll pll_inst (
+    
+        .rst             ( ~rst_n     ),
+        .refclk         ( clk         ),
+        .outclk_0    ( clk_25m    ),
+        .locked       ( pll_locked)
+    );
+
+    vga_ctrl vga_ctrl_inst (
+
+        .clk                    (clk_25m        ),
+        .rst_n                (pll_locked    ),
+                         
+        .vga_rgb                (vga_rgb        ),
+        .vga_hs                (vga_hs        ),
+        .vga_blanck_n        (VGA_BLANK_N),
+        .vga_vs                (vga_vs        )
+    );
+
+assign VGA_SYNC_N=1'b0;   //Ifnot SOG, Sync input should be tied to 0; 
+assign VGA_CLK=clk_25m;
+ 
+endmodule
